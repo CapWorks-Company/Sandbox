@@ -31,10 +31,11 @@
     --nebula-blue: #2b6cff;
     --accent-green: #59d68b;
     --accent-green-dim: #2f7a52;
-    --text: #eef0fa;
-    --text-dim: #9ea3c4;
-    --card-bg: rgba(255,255,255,0.035);
-    --card-border: rgba(255,255,255,0.09);
+    --text: #f5f6ff;
+    --text-dim: #c1c5e2;
+    --card-bg: rgba(255,255,255,0.055);
+    --card-border: rgba(255,255,255,0.12);
+    --ease-fluid: cubic-bezier(.16,.8,.24,1);
     --font-display: 'Silkscreen', monospace;
     --font-body: 'Inter', -apple-system, sans-serif;
   }
@@ -49,6 +50,21 @@
     font-family: var(--font-body);
     overflow-x: hidden;
     position: relative;
+  }
+
+  /* ---------- ANIMATIONS D'ENTRÉE (fluidité) ---------- */
+  @keyframes heroIn{
+    from{ opacity: 0; transform: translateY(22px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+  .reveal{
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s var(--ease-fluid), transform 0.8s var(--ease-fluid);
+  }
+  .reveal.is-visible{
+    opacity: 1;
+    transform: translateY(0);
   }
 
   /* ---------- FOND SPATIAL ---------- */
@@ -80,6 +96,7 @@
     );
     filter: blur(6px);
     mix-blend-mode: screen;
+    transition: transform 0.6s var(--ease-fluid);
   }
 
   /* Grain fin pour casser les dégradés plats et donner une texture photo */
@@ -144,6 +161,7 @@
     z-index: 1;
     pointer-events: none;
     perspective: 800px;
+    transition: transform 0.6s var(--ease-fluid);
   }
   .cube{
     position: absolute;
@@ -207,6 +225,7 @@
     padding: 18px 6vw;
     background: linear-gradient(180deg, rgba(6,7,15,0.85), rgba(6,7,15,0));
     backdrop-filter: blur(6px);
+    animation: heroIn 0.7s var(--ease-fluid) both;
   }
   .brand{
     display: flex;
@@ -217,6 +236,11 @@
     width: 36px; height: 36px;
     image-rendering: pixelated;
     filter: drop-shadow(0 0 8px rgba(124,58,237,0.6));
+    transition: filter 0.3s ease, transform 0.3s var(--ease-fluid);
+  }
+  .brand:hover img{
+    filter: drop-shadow(0 0 14px rgba(124,58,237,0.85));
+    transform: scale(1.08) rotate(-4deg);
   }
   .brand span{
     font-family: var(--font-display);
@@ -229,13 +253,25 @@
     gap: 28px;
   }
   nav a{
+    position: relative;
     color: var(--text-dim);
     text-decoration: none;
     font-size: 14px;
     font-weight: 500;
-    transition: color 0.2s;
+    transition: color 0.25s ease;
+    padding-bottom: 3px;
   }
-  nav a:hover{ color: var(--accent-green); }
+  nav a::after{
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 0%;
+    height: 1px;
+    background: var(--accent-green);
+    transition: width 0.3s var(--ease-fluid);
+  }
+  nav a:hover{ color: var(--text); }
+  nav a:hover::after{ width: 100%; }
 
   /* ---------- HERO ---------- */
   .hero{
@@ -259,6 +295,8 @@
     font-size: 12.5px;
     color: var(--text-dim);
     margin-bottom: 28px;
+    backdrop-filter: blur(8px);
+    animation: heroIn 0.7s var(--ease-fluid) 0.1s both;
   }
   .status-dot{
     width: 8px; height: 8px;
@@ -277,7 +315,7 @@
     image-rendering: pixelated;
     margin-bottom: 24px;
     filter: drop-shadow(0 0 30px rgba(124,58,237,0.55)) drop-shadow(0 0 60px rgba(43,108,255,0.25));
-    animation: floatLogo 6s ease-in-out infinite;
+    animation: heroIn 0.9s var(--ease-fluid) 0.2s both, floatLogo 6s ease-in-out 1.1s infinite;
   }
   @keyframes floatLogo{
     0%,100%{ transform: translateY(0); }
@@ -290,18 +328,22 @@
     letter-spacing: 2px;
     line-height: 1.3;
     margin-bottom: 16px;
-    background: linear-gradient(180deg, #ffffff, #b8b6ff);
+    background: linear-gradient(180deg, #ffffff, #cfcdff);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    text-shadow: 0 4px 30px rgba(0,0,0,0.5);
+    animation: heroIn 0.8s var(--ease-fluid) 0.35s both;
   }
 
   .hero p.tagline{
     color: var(--text-dim);
     max-width: 560px;
-    font-size: 16px;
-    line-height: 1.6;
+    font-size: 17px;
+    line-height: 1.65;
     margin-bottom: 36px;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.45);
+    animation: heroIn 0.8s var(--ease-fluid) 0.5s both;
   }
 
   .ip-box{
@@ -313,6 +355,13 @@
     padding: 10px 10px 10px 22px;
     border-radius: 12px;
     margin-bottom: 18px;
+    backdrop-filter: blur(10px);
+    animation: heroIn 0.8s var(--ease-fluid) 0.62s both;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .ip-box:hover{
+    border-color: rgba(89,214,139,0.45);
+    box-shadow: 0 0 22px rgba(89,214,139,0.12);
   }
   .ip-box code{
     font-family: var(--font-display);
@@ -330,14 +379,23 @@
     padding: 10px 18px;
     border-radius: 8px;
     cursor: pointer;
-    transition: transform 0.15s, background 0.2s;
+    transition: transform 0.2s var(--ease-fluid), background 0.2s ease, box-shadow 0.2s ease;
   }
-  .ip-box button:hover{ transform: translateY(-1px); background: #6fe89d; }
-  .ip-box button:active{ transform: translateY(0); }
+  .ip-box button:hover{
+    transform: translateY(-2px) scale(1.03);
+    background: #6fe89d;
+    box-shadow: 0 6px 18px rgba(89,214,139,0.3);
+  }
+  .ip-box button:active{ transform: translateY(0) scale(0.98); }
 
+  .modpack-box{ animation-delay: 0.74s; }
   .modpack-box code{ color: #b8a4ff; }
   .modpack-box button{ background: #9d7bff; color: #16112b; }
-  .modpack-box button:hover{ background: #b294ff; }
+  .modpack-box button:hover{ background: #b294ff; box-shadow: 0 6px 18px rgba(157,123,255,0.3); }
+  .modpack-box:hover{
+    border-color: rgba(157,123,255,0.45);
+    box-shadow: 0 0 22px rgba(157,123,255,0.12);
+  }
 
   .hero .cta-secondary{
     color: var(--text-dim);
@@ -345,8 +403,10 @@
     text-decoration: none;
     border-bottom: 1px dashed var(--card-border);
     padding-bottom: 2px;
+    transition: color 0.25s ease, border-color 0.25s ease;
+    animation: heroIn 0.8s var(--ease-fluid) 0.86s both;
   }
-  .hero .cta-secondary:hover{ color: var(--text); }
+  .hero .cta-secondary:hover{ color: var(--text); border-color: var(--accent-green); }
 
   /* ---------- SECTIONS GÉNÉRIQUES ---------- */
   section{
@@ -364,8 +424,11 @@
   .section-title{
     font-size: clamp(22px, 3.5vw, 32px);
     font-weight: 700;
+    color: var(--text);
+    line-height: 1.4;
     margin-bottom: 44px;
     max-width: 560px;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.4);
   }
 
   /* ---------- FEATURES ---------- */
@@ -379,26 +442,33 @@
     border: 1px solid var(--card-border);
     border-radius: 14px;
     padding: 26px 22px;
-    transition: border-color 0.2s, transform 0.2s;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.3s var(--ease-fluid), transform 0.35s var(--ease-fluid), box-shadow 0.35s var(--ease-fluid);
   }
   .feature-card:hover{
-    border-color: rgba(124,58,237,0.5);
-    transform: translateY(-3px);
+    border-color: rgba(124,58,237,0.55);
+    transform: translateY(-5px);
+    box-shadow: 0 14px 34px rgba(0,0,0,0.35);
   }
   .feature-icon{
     width: 30px; height: 30px;
     margin-bottom: 16px;
     image-rendering: pixelated;
     display:block;
+    transition: transform 0.35s var(--ease-fluid);
+  }
+  .feature-card:hover .feature-icon{
+    transform: scale(1.15) rotate(-6deg);
   }
   .feature-card h3{
-    font-size: 16px;
+    font-size: 16.5px;
+    color: var(--text);
     margin-bottom: 8px;
   }
   .feature-card p{
-    font-size: 13.5px;
+    font-size: 14.5px;
     color: var(--text-dim);
-    line-height: 1.6;
+    line-height: 1.7;
   }
 
   /* ---------- REJOINDRE (steps) ---------- */
@@ -415,7 +485,9 @@
     background: var(--card-bg);
     border-right: 1px solid var(--card-border);
     position: relative;
+    transition: background 0.3s ease;
   }
+  .step:hover{ background: rgba(255,255,255,0.08); }
   .step:last-child{ border-right: none; }
   .step .step-num{
     font-family: var(--font-display);
@@ -423,15 +495,23 @@
     color: var(--accent-green);
     margin-bottom: 14px;
     display: block;
+    transition: transform 0.3s var(--ease-fluid);
   }
+  .step:hover .step-num{ transform: translateX(4px); }
   .step h4{
-    font-size: 15px;
+    font-size: 15.5px;
+    color: var(--text);
     margin-bottom: 8px;
   }
   .step p{
-    font-size: 13.5px;
+    font-size: 14.5px;
     color: var(--text-dim);
-    line-height: 1.6;
+    line-height: 1.7;
+  }
+  .step p code{
+    color: #b8a4ff;
+    font-family: var(--font-display);
+    font-size: 12.5px;
   }
 
   /* ---------- FOOTER ---------- */
@@ -454,9 +534,11 @@
   footer .foot-left img{
     width: 22px; height: 22px;
     image-rendering: pixelated;
+    transition: transform 0.3s var(--ease-fluid);
   }
+  footer .foot-left:hover img{ transform: rotate(-8deg) scale(1.08); }
   footer .foot-left span{
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--text-dim);
   }
   footer .foot-links{
@@ -464,12 +546,23 @@
     gap: 22px;
   }
   footer .foot-links a{
+    position: relative;
     color: var(--text-dim);
     text-decoration: none;
-    font-size: 13px;
-    transition: color 0.2s;
+    font-size: 13.5px;
+    transition: color 0.25s ease;
   }
-  footer .foot-links a:hover{ color: var(--accent-green); }
+  footer .foot-links a::after{
+    content: '';
+    position: absolute;
+    left: 0; bottom: -3px;
+    width: 0%;
+    height: 1px;
+    background: var(--accent-green);
+    transition: width 0.3s var(--ease-fluid);
+  }
+  footer .foot-links a:hover{ color: var(--text); }
+  footer .foot-links a:hover::after{ width: 100%; }
 
   @media (max-width: 640px){
     nav{ display: none; }
@@ -544,36 +637,36 @@
   </section>
 
   <section id="features">
-    <div class="section-eyebrow">FONCTIONNALITÉS</div>
-    <h2 class="section-title">Pensé pour durer, construit pour jouer</h2>
+    <div class="section-eyebrow reveal">FONCTIONNALITÉS</div>
+    <h2 class="section-title reveal">Pensé pour durer, construit pour jouer</h2>
 
     <div class="features-grid">
-      <div class="feature-card">
+      <div class="feature-card reveal">
         <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#59d68b"/><rect x="2" y="2" width="4" height="4" fill="#7fdc63"/><rect x="10" y="10" width="4" height="4" fill="#3a9c62"/></svg>
         <h3>Modpack Forge sur mesure</h3>
         <p>Un modpack pensé pour la découverte : tech, magie et exploration, à installer en un clic avec le code <code>oZWwrvbT</code>.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal">
         <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffd166"/><rect x="3" y="3" width="10" height="10" fill="#f4a300"/></svg>
         <h3>Économie & marché</h3>
         <p>Un système de commerce entre joueurs, des métiers, et une monnaie propre au serveur pour développer ta base.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal">
         <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#7c3aed"/><rect x="4" y="4" width="8" height="8" fill="#a78bfa"/></svg>
         <h3>Progression & quêtes</h3>
         <p>Un fil rouge pour guider ta progression dans les mods, du premier établi jusqu'aux machines les plus avancées.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal">
         <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#2b6cff"/><rect x="2" y="6" width="12" height="4" fill="#8ab4ff"/></svg>
         <h3>Anti-grief & sécurité</h3>
         <p>Protection de terrain, sauvegardes automatiques et modération active pour construire l'esprit tranquille.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal">
         <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#59d68b"/><rect x="1" y="1" width="6" height="6" fill="#2f7a52"/><rect x="9" y="9" width="6" height="6" fill="#2f7a52"/></svg>
         <h3>Communauté Discord</h3>
         <p>Un serveur Discord actif pour trouver des coéquipiers, suivre les annonces et discuter en direct.</p>
       </div>
-      <div class="feature-card">
+      <div class="feature-card reveal">
         <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f4a300"/><rect x="5" y="0" width="6" height="16" fill="#ffd166"/></svg>
         <h3>Performances stables</h3>
         <p>Hébergement dédié, faible latence et un TPS surveillé en permanence pour une expérience fluide.</p>
@@ -582,10 +675,10 @@
   </section>
 
   <section id="rejoindre">
-    <div class="section-eyebrow">REJOINDRE</div>
-    <h2 class="section-title">Connecte-toi en trois étapes</h2>
+    <div class="section-eyebrow reveal">REJOINDRE</div>
+    <h2 class="section-title reveal">Connecte-toi en quatre étapes</h2>
 
-    <div class="steps">
+    <div class="steps reveal">
       <div class="step">
         <span class="step-num">01</span>
         <h4>Installe le modpack</h4>
@@ -631,6 +724,49 @@
       const original = btn.textContent;
       btn.textContent = 'Copié !';
       setTimeout(() => { btn.textContent = original; }, 1600);
+    });
+  }
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------- Apparition fluide au scroll ----------
+  const revealEls = document.querySelectorAll('.reveal');
+  if(reducedMotion){
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  } else {
+    const groups = {};
+    revealEls.forEach(el => {
+      const parent = el.closest('section')?.id || 'default';
+      groups[parent] = groups[parent] || 0;
+      el.style.transitionDelay = (groups[parent] * 70) + 'ms';
+      groups[parent]++;
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  }
+
+  // ---------- Parallax souris sur les couches spatiales ----------
+  if(!reducedMotion && window.matchMedia('(hover: hover)').matches){
+    const voxelField = document.querySelector('.voxel-field');
+    const milkyWay = document.querySelector('.milky-way');
+    let ticking = false;
+    window.addEventListener('mousemove', (e) => {
+      if(ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth - 0.5);
+        const y = (e.clientY / window.innerHeight - 0.5);
+        voxelField.style.transform = `translate(${x * 22}px, ${y * 22}px)`;
+        milkyWay.style.transform = `translate(${x * -14}px, ${y * -14}px)`;
+        ticking = false;
+      });
     });
   }
 
@@ -705,8 +841,6 @@
       });
     }
   }
-
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
