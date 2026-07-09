@@ -13,9 +13,12 @@
   - Code modpack   : cherchez "oZWwrvbT" et remplacez
   - Logo           : placez un fichier "logo.png" dans le même
                       dossier que ce index.html
-  - Lien Discord   : cherchez "https://discord.gg/h2gwnHyww8"
-  - Nombre de joueurs : cherchez "128 / 500" (à brancher sur une
-                      vraie API de statut si besoin plus tard)
+  - Lien Discord   : déjà mis à jour → https://discord.gg/h2gwnHyww8
+  - Nombre de joueurs : désormais RÉCUPÉRÉ EN DIRECT depuis l'IP
+                      du serveur via l'API publique mcsrvstat.us
+                      (fonctionne aussi pour les serveurs Forge/moddés).
+                      Rien à faire, ça se met à jour tout seul toutes
+                      les 60 secondes tant que le serveur est joignable.
   ==========================================================
 -->
 
@@ -506,6 +509,79 @@
     line-height: 1.7;
   }
 
+  /* ---------- GRADES (tableau des avantages) ---------- */
+  .grades-wrap{
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    overflow: auto;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    max-height: 640px;
+  }
+  table.grades{
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 920px;
+    font-size: 13.5px;
+  }
+  table.grades th, table.grades td{
+    padding: 12px 16px;
+    text-align: center;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--card-border);
+  }
+  table.grades thead th{
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: #0c0e22;
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    letter-spacing: 0.5px;
+    padding: 16px;
+  }
+  table.grades thead th .rank-icon{
+    display: block;
+    font-size: 17px;
+    margin-bottom: 6px;
+  }
+  table.grades td:first-child, table.grades th:first-child{
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    text-align: left;
+    background: #0c0e22;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+  table.grades thead th:first-child{ z-index: 4; }
+  table.grades tbody tr:nth-child(even) td{ background: rgba(255,255,255,0.025); }
+  table.grades tbody tr:nth-child(even) td:first-child{ background: #10122a; }
+  table.grades tbody tr:hover td{ background: rgba(124,58,237,0.08); }
+  table.grades tbody tr:hover td:first-child{ background: #14163a; }
+  table.grades td{ color: var(--text-dim); }
+  table.grades .yes{ color: var(--accent-green); font-weight: 700; }
+  table.grades .no{ color: rgba(193,197,226,0.35); }
+
+  th.rank-joueur{ color: var(--text-dim); }
+  th.rank-vip{ color: #ffd166; }
+  th.rank-vip-plus{ color: #ffb347; }
+  th.rank-master{ color: #4fd1ff; }
+  th.rank-master-plus{ color: #9d7bff; }
+  th.rank-legend{ color: #ffe08a; text-shadow: 0 0 12px rgba(255,224,138,0.5); }
+  th.rank-ultimate{ color: #ff8a5c; text-shadow: 0 0 12px rgba(255,138,92,0.5); }
+
+  .grades-note{
+    margin-top: 16px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 640px){
+    .grades-wrap{ max-height: 480px; }
+  }
+
   /* ---------- REJOINDRE (steps) ---------- */
   .steps{
     display: grid;
@@ -639,6 +715,7 @@
       <ul>
         <li><a href="#features">Fonctionnalités</a></li>
         <li><a href="#rejoindre">Rejoindre</a></li>
+        <li><a href="#grades">Grades</a></li>
         <li><a href="#discord">Discord</a></li>
       </ul>
     </nav>
@@ -737,6 +814,57 @@
         <p>Utilise <code>ascraftia.hosterfy.eu</code> comme adresse, valide, et rejoins l'aventure.</p>
       </div>
     </div>
+  </section>
+
+  <section id="grades">
+    <div class="section-eyebrow reveal">BOUTIQUE</div>
+    <h2 class="section-title reveal">Les grades et leurs avantages</h2>
+
+    <div class="grades-wrap reveal">
+      <table class="grades">
+        <thead>
+          <tr>
+            <th class="rank-joueur">Joueur</th>
+            <th class="rank-vip"><span class="rank-icon">⭐</span>VIP</th>
+            <th class="rank-vip-plus"><span class="rank-icon">🌟</span>VIP+</th>
+            <th class="rank-master"><span class="rank-icon">💎</span>MASTER</th>
+            <th class="rank-master-plus"><span class="rank-icon">💠</span>MASTER+</th>
+            <th class="rank-legend"><span class="rank-icon">✨</span>LEGEND</th>
+            <th class="rank-ultimate"><span class="rank-icon">🔥</span>ULTIMATE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Homes</td><td>3</td><td>5</td><td>8</td><td>12</td><td>20</td><td>35</td><td>Illimités</td></tr>
+          <tr><td>Claims FTB</td><td>500</td><td>750</td><td>1000</td><td>1500</td><td>2500</td><td>4000</td><td>6000</td></tr>
+          <tr><td>Chunks chargés</td><td>10</td><td>20</td><td>35</td><td>50</td><td>75</td><td>100</td><td>150</td></tr>
+          <tr><td>Kits</td><td>Aucun</td><td>Hebdo</td><td>Hebdo+</td><td>Tous les 5 j</td><td>Tous les 4 j</td><td>Tous les 3 j</td><td>Tous les 2 j</td></tr>
+          <tr><td>Argent de départ</td><td>0</td><td>25k</td><td>75k</td><td>150k</td><td>300k</td><td>600k</td><td>1M</td></tr>
+          <tr><td>Pets</td><td>0</td><td>1</td><td>3</td><td>5</td><td>8</td><td>15</td><td>Illimités</td></tr>
+          <tr><td>Warps</td><td>0</td><td>2</td><td>5</td><td>10</td><td>20</td><td>35</td><td>50</td></tr>
+          <tr><td>Backpack</td><td>Non</td><td>Petit</td><td>Moyen</td><td>Grand</td><td>Très grand</td><td>Énorme</td><td>Max</td></tr>
+          <tr><td>Taille du backpack</td><td>–</td><td>27</td><td>54</td><td>81</td><td>108</td><td>135</td><td>162</td></tr>
+          <tr><td>Ender Chest virtuel</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Auction House (slots)</td><td>5</td><td>10</td><td>20</td><td>40</td><td>60</td><td>100</td><td>Illimité</td></tr>
+          <tr><td>Fly au spawn</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Fly en claim</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Repair</td><td class="no">✕</td><td>/repair</td><td>/repair</td><td>/repair</td><td>/repair</td><td>/repair</td><td>/repair all</td></tr>
+          <tr><td>Feed</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Heal</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Workbench</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Ender Chest (commande)</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Anvil</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Grindstone</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Loom / Stonecutter</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+          <tr><td>Préfixe exclusif</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>Animé</td><td>Animé</td></tr>
+          <tr><td>Couleurs dans le chat</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>Gradient</td><td>Gradient</td></tr>
+          <tr><td>Particules</td><td class="no">✕</td><td>Quelques</td><td>+</td><td>++</td><td>+++</td><td>Exclusives</td><td>Toutes</td></tr>
+          <tr><td>Montures</td><td class="no">✕</td><td>2</td><td>5</td><td>8</td><td>12</td><td>20</td><td>Toutes</td></tr>
+          <tr><td>Cosmétiques</td><td class="no">✕</td><td>Quelques</td><td>Beaucoup</td><td>Presque tous</td><td>Tous</td><td>Tous + exclusifs</td><td>Tout</td></tr>
+          <tr><td>File prioritaire</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td>Priorité haute</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="grades-note">Grades cosmétiques et de confort — aucun avantage compétitif décisif en PvP. Fais défiler horizontalement sur mobile pour voir toutes les colonnes.</p>
   </section>
 
   <footer id="discord">
