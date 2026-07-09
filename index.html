@@ -1,1 +1,763 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsCraftia — Serveur Minecraft Forge Moddé</title>
 
+<!--
+  ==========================================================
+  À PERSONNALISER FACILEMENT :
+  - Nom du serveur : cherchez "AsCraftia" et remplacez partout
+  - IP du serveur  : cherchez "ascraftia.hosterfy.eu" et remplacez
+  - Code modpack   : cherchez "oZWwrvbT" et remplacez
+  - Logo           : placez un fichier "logo.png" dans le même
+                      dossier que ce index.html
+  - Lien Discord   : cherchez "https://discord.gg/xxxxxxx"
+  - Nombre de joueurs : cherchez "128 / 500" (à brancher sur une
+                      vraie API de statut si besoin plus tard)
+  ==========================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #06070f;
+    --bg2: #0b0e22;
+    --nebula-purple: #7c3aed;
+    --nebula-blue: #2b6cff;
+    --accent-green: #59d68b;
+    --accent-green-dim: #2f7a52;
+    --text: #eef0fa;
+    --text-dim: #9ea3c4;
+    --card-bg: rgba(255,255,255,0.035);
+    --card-border: rgba(255,255,255,0.09);
+    --font-display: 'Silkscreen', monospace;
+    --font-body: 'Inter', -apple-system, sans-serif;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ---------- FOND SPATIAL ---------- */
+  #stars{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse 900px 700px at 22% 12%, rgba(60,50,90,0.55) 0%, rgba(60,50,90,0) 55%),
+      radial-gradient(ellipse 700px 900px at 82% 78%, rgba(30,45,80,0.5) 0%, rgba(30,45,80,0) 55%),
+      radial-gradient(ellipse at 50% 0%, #0d1026 0%, var(--bg) 65%);
+  }
+
+  /* Bande de voie lactée : traînée diffuse en diagonale, comme sur une vraie photo de ciel */
+  .milky-way{
+    position: fixed;
+    inset: -20% -20%;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      118deg,
+      rgba(255,255,255,0) 38%,
+      rgba(190,185,225,0.05) 46%,
+      rgba(210,205,240,0.09) 50%,
+      rgba(190,185,225,0.05) 54%,
+      rgba(255,255,255,0) 62%
+    );
+    filter: blur(6px);
+    mix-blend-mode: screen;
+  }
+
+  /* Grain fin pour casser les dégradés plats et donner une texture photo */
+  .grain{
+    position: fixed;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .nebula{
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.32;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .nebula.n1{
+    width: 560px; height: 480px;
+    background: radial-gradient(circle at 35% 35%, #9d6bff, var(--nebula-purple) 55%, transparent 75%);
+    top: -12%; left: -12%;
+    animation: drift1 42s ease-in-out infinite alternate;
+  }
+  .nebula.n2{
+    width: 500px; height: 440px;
+    background: radial-gradient(circle at 60% 40%, #5b8bff, var(--nebula-blue) 55%, transparent 75%);
+    bottom: -16%; right: -10%;
+    animation: drift2 48s ease-in-out infinite alternate;
+  }
+  .nebula.n3{
+    width: 340px; height: 300px;
+    background: radial-gradient(circle at 50% 50%, #ff8fb3, #b34d78 55%, transparent 75%);
+    top: 38%; right: 22%;
+    opacity: 0.14;
+    animation: drift1 55s ease-in-out infinite alternate-reverse;
+  }
+  .nebula.n4{
+    width: 260px; height: 220px;
+    background: radial-gradient(circle at 50% 50%, #ffcf8a, #8a5a2e 55%, transparent 75%);
+    top: 8%; right: 6%;
+    opacity: 0.12;
+    animation: drift2 60s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift1{
+    from{ transform: translate(0,0) scale(1); }
+    to{ transform: translate(60px, 40px) scale(1.15); }
+  }
+  @keyframes drift2{
+    from{ transform: translate(0,0) scale(1); }
+    to{ transform: translate(-50px, -30px) scale(1.1); }
+  }
+
+  /* ---------- BLOCS VOXEL FLOTTANTS (signature) ---------- */
+  .voxel-field{
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    perspective: 800px;
+  }
+  .cube{
+    position: absolute;
+    width: 34px; height: 34px;
+    transform-style: preserve-3d;
+    animation: floatCube 14s ease-in-out infinite, spinCube 22s linear infinite;
+    opacity: 0.85;
+  }
+  .cube .face{
+    position: absolute;
+    width: 34px; height: 34px;
+  }
+  .cube .top{
+    background: linear-gradient(135deg, #7fdc63, #4fae42);
+    transform: rotateX(90deg) translateZ(17px);
+  }
+  .cube .front{
+    background: linear-gradient(180deg, #8a5a34, #6b4423);
+    transform: translateZ(17px);
+  }
+  .cube .right{
+    background: linear-gradient(180deg, #6e4526, #52341c);
+    transform: rotateY(90deg) translateZ(17px);
+  }
+  .cube.c1{ top: 14%; left: 8%;  animation-duration: 16s, 26s; }
+  .cube.c2{ top: 68%; left: 5%;  animation-duration: 12s, 19s; width:24px; height:24px; }
+  .cube.c2 .face{ width:24px; height:24px; }
+  .cube.c2 .top{ transform: rotateX(90deg) translateZ(12px); }
+  .cube.c2 .front{ transform: translateZ(12px); }
+  .cube.c2 .right{ transform: rotateY(90deg) translateZ(12px); }
+  .cube.c3{ top: 22%; right: 10%; animation-duration: 18s, 30s; }
+  .cube.c4{ top: 75%; right: 14%; animation-duration: 15s, 24s; width:20px; height:20px; }
+  .cube.c4 .face{ width:20px; height:20px; }
+  .cube.c4 .top{ transform: rotateX(90deg) translateZ(10px); }
+  .cube.c4 .front{ transform: translateZ(10px); }
+  .cube.c4 .right{ transform: rotateY(90deg) translateZ(10px); }
+  .cube.c5{ top: 45%; left: 45%; animation-duration: 20s, 34s; opacity:0.5; }
+
+  @keyframes floatCube{
+    0%,100%{ transform: translateY(0px); }
+    50%{ transform: translateY(-28px); }
+  }
+  @keyframes spinCube{
+    from{ transform: rotateY(0deg) rotateX(8deg); }
+    to{ transform: rotateY(360deg) rotateX(8deg); }
+  }
+
+  /* ---------- LAYOUT GÉNÉRAL ---------- */
+  .page{
+    position: relative;
+    z-index: 2;
+  }
+
+  header{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 6vw;
+    background: linear-gradient(180deg, rgba(6,7,15,0.85), rgba(6,7,15,0));
+    backdrop-filter: blur(6px);
+  }
+  .brand{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand img{
+    width: 36px; height: 36px;
+    image-rendering: pixelated;
+    filter: drop-shadow(0 0 8px rgba(124,58,237,0.6));
+  }
+  .brand span{
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 1px;
+  }
+  nav ul{
+    list-style: none;
+    display: flex;
+    gap: 28px;
+  }
+  nav a{
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav a:hover{ color: var(--accent-green); }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 6vw 40px;
+  }
+
+  .hero .status-pill{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 28px;
+  }
+  .status-dot{
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent-green);
+    box-shadow: 0 0 8px var(--accent-green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity: 1; }
+    50%{ opacity: 0.4; }
+  }
+
+  .hero-logo{
+    width: 128px; height: 128px;
+    image-rendering: pixelated;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 0 30px rgba(124,58,237,0.55)) drop-shadow(0 0 60px rgba(43,108,255,0.25));
+    animation: floatLogo 6s ease-in-out infinite;
+  }
+  @keyframes floatLogo{
+    0%,100%{ transform: translateY(0); }
+    50%{ transform: translateY(-14px); }
+  }
+
+  .hero h1{
+    font-family: var(--font-display);
+    font-size: clamp(28px, 6vw, 56px);
+    letter-spacing: 2px;
+    line-height: 1.3;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, #ffffff, #b8b6ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero p.tagline{
+    color: var(--text-dim);
+    max-width: 560px;
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+
+  .ip-box{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    padding: 10px 10px 10px 22px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+  }
+  .ip-box code{
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--accent-green);
+    letter-spacing: 1px;
+  }
+  .ip-box button{
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--bg);
+    background: var(--accent-green);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s;
+  }
+  .ip-box button:hover{ transform: translateY(-1px); background: #6fe89d; }
+  .ip-box button:active{ transform: translateY(0); }
+
+  .modpack-box code{ color: #b8a4ff; }
+  .modpack-box button{ background: #9d7bff; color: #16112b; }
+  .modpack-box button:hover{ background: #b294ff; }
+
+  .hero .cta-secondary{
+    color: var(--text-dim);
+    font-size: 13.5px;
+    text-decoration: none;
+    border-bottom: 1px dashed var(--card-border);
+    padding-bottom: 2px;
+  }
+  .hero .cta-secondary:hover{ color: var(--text); }
+
+  /* ---------- SECTIONS GÉNÉRIQUES ---------- */
+  section{
+    padding: 90px 6vw;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .section-eyebrow{
+    font-family: var(--font-display);
+    font-size: 12px;
+    color: var(--accent-green);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .section-title{
+    font-size: clamp(22px, 3.5vw, 32px);
+    font-weight: 700;
+    margin-bottom: 44px;
+    max-width: 560px;
+  }
+
+  /* ---------- FEATURES ---------- */
+  .features-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .feature-card{
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 26px 22px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .feature-card:hover{
+    border-color: rgba(124,58,237,0.5);
+    transform: translateY(-3px);
+  }
+  .feature-icon{
+    width: 30px; height: 30px;
+    margin-bottom: 16px;
+    image-rendering: pixelated;
+    display:block;
+  }
+  .feature-card h3{
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  .feature-card p{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ---------- REJOINDRE (steps) ---------- */
+  .steps{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .step{
+    padding: 30px 24px;
+    background: var(--card-bg);
+    border-right: 1px solid var(--card-border);
+    position: relative;
+  }
+  .step:last-child{ border-right: none; }
+  .step .step-num{
+    font-family: var(--font-display);
+    font-size: 13px;
+    color: var(--accent-green);
+    margin-bottom: 14px;
+    display: block;
+  }
+  .step h4{
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  .step p{
+    font-size: 13.5px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    position: relative;
+    z-index: 2;
+    padding: 50px 6vw 40px;
+    border-top: 1px solid var(--card-border);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  footer .foot-left{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  footer .foot-left img{
+    width: 22px; height: 22px;
+    image-rendering: pixelated;
+  }
+  footer .foot-left span{
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  footer .foot-links{
+    display: flex;
+    gap: 22px;
+  }
+  footer .foot-links a{
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+  footer .foot-links a:hover{ color: var(--accent-green); }
+
+  @media (max-width: 640px){
+    nav{ display: none; }
+    .step{ border-right: none; border-bottom: 1px solid var(--card-border); }
+    .step:last-child{ border-bottom: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+<div class="milky-way"></div>
+<div class="nebula n1"></div>
+<div class="nebula n2"></div>
+<div class="nebula n3"></div>
+<div class="nebula n4"></div>
+<div class="grain"></div>
+
+<div class="voxel-field">
+  <div class="cube c1"><div class="face top"></div><div class="face front"></div><div class="face right"></div></div>
+  <div class="cube c2"><div class="face top"></div><div class="face front"></div><div class="face right"></div></div>
+  <div class="cube c3"><div class="face top"></div><div class="face front"></div><div class="face right"></div></div>
+  <div class="cube c4"><div class="face top"></div><div class="face front"></div><div class="face right"></div></div>
+  <div class="cube c5"><div class="face top"></div><div class="face front"></div><div class="face right"></div></div>
+</div>
+
+<div class="page">
+
+  <header>
+    <div class="brand">
+      <img src="logo.png" alt="Logo du serveur">
+      <span>ASCRAFTIA</span>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#features">Fonctionnalités</a></li>
+        <li><a href="#rejoindre">Rejoindre</a></li>
+        <li><a href="#discord">Discord</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      Serveur en ligne — 128 / 500 joueurs
+    </div>
+
+    <img class="hero-logo" src="logo.png" alt="Logo AsCraftia">
+
+    <h1>Un univers moddé<br>perdu parmi les étoiles</h1>
+    <p class="tagline">
+      Rejoins AsCraftia, un serveur Minecraft Forge moddé, pensé pour l'exploration,
+      la technologie et la magie, loin de tout.
+    </p>
+
+    <div class="ip-box">
+      <code id="server-ip">ascraftia.hosterfy.eu</code>
+      <button id="copy-btn" onclick="copyValue('server-ip', this)">Copier l'IP</button>
+    </div>
+
+    <div class="ip-box modpack-box">
+      <code id="modpack-code">oZWwrvbT</code>
+      <button id="copy-modpack-btn" onclick="copyValue('modpack-code', this)">Copier le code modpack</button>
+    </div>
+
+    <a class="cta-secondary" href="#rejoindre">Comment se connecter →</a>
+  </section>
+
+  <section id="features">
+    <div class="section-eyebrow">FONCTIONNALITÉS</div>
+    <h2 class="section-title">Pensé pour durer, construit pour jouer</h2>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#59d68b"/><rect x="2" y="2" width="4" height="4" fill="#7fdc63"/><rect x="10" y="10" width="4" height="4" fill="#3a9c62"/></svg>
+        <h3>Modpack Forge sur mesure</h3>
+        <p>Un modpack pensé pour la découverte : tech, magie et exploration, à installer en un clic avec le code <code>oZWwrvbT</code>.</p>
+      </div>
+      <div class="feature-card">
+        <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#ffd166"/><rect x="3" y="3" width="10" height="10" fill="#f4a300"/></svg>
+        <h3>Économie & marché</h3>
+        <p>Un système de commerce entre joueurs, des métiers, et une monnaie propre au serveur pour développer ta base.</p>
+      </div>
+      <div class="feature-card">
+        <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#7c3aed"/><rect x="4" y="4" width="8" height="8" fill="#a78bfa"/></svg>
+        <h3>Progression & quêtes</h3>
+        <p>Un fil rouge pour guider ta progression dans les mods, du premier établi jusqu'aux machines les plus avancées.</p>
+      </div>
+      <div class="feature-card">
+        <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#2b6cff"/><rect x="2" y="6" width="12" height="4" fill="#8ab4ff"/></svg>
+        <h3>Anti-grief & sécurité</h3>
+        <p>Protection de terrain, sauvegardes automatiques et modération active pour construire l'esprit tranquille.</p>
+      </div>
+      <div class="feature-card">
+        <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#59d68b"/><rect x="1" y="1" width="6" height="6" fill="#2f7a52"/><rect x="9" y="9" width="6" height="6" fill="#2f7a52"/></svg>
+        <h3>Communauté Discord</h3>
+        <p>Un serveur Discord actif pour trouver des coéquipiers, suivre les annonces et discuter en direct.</p>
+      </div>
+      <div class="feature-card">
+        <svg class="feature-icon" viewBox="0 0 16 16"><rect width="16" height="16" fill="#f4a300"/><rect x="5" y="0" width="6" height="16" fill="#ffd166"/></svg>
+        <h3>Performances stables</h3>
+        <p>Hébergement dédié, faible latence et un TPS surveillé en permanence pour une expérience fluide.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="rejoindre">
+    <div class="section-eyebrow">REJOINDRE</div>
+    <h2 class="section-title">Connecte-toi en trois étapes</h2>
+
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h4>Installe le modpack</h4>
+        <p>Dans CurseForge (ou ton launcher moddé préféré), importe le modpack avec le code <code>oZWwrvbT</code>.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h4>Lance le profil moddé</h4>
+        <p>Une fois installé, lance ce profil Forge : tous les mods nécessaires sont déjà en place.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h4>Ajoute le serveur</h4>
+        <p>Va dans Multijoueur → Ajouter un serveur, et donne-lui le nom que tu veux.</p>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <h4>Colle l'adresse IP</h4>
+        <p>Utilise <code>ascraftia.hosterfy.eu</code> comme adresse, valide, et rejoins l'aventure.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer id="discord">
+    <div class="foot-left">
+      <img src="logo.png" alt="Logo">
+      <span>AsCraftia — © 2026. Non affilié à Mojang, Microsoft ou Forge.</span>
+    </div>
+    <div class="foot-links">
+      <a href="https://discord.gg/xxxxxxx" target="_blank" rel="noopener">Discord</a>
+      <a href="#rejoindre">Nous rejoindre</a>
+      <a href="#features">Fonctionnalités</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ---------- Copier l'IP / le code modpack ----------
+  function copyValue(elementId, btn){
+    const value = document.getElementById(elementId).textContent;
+    navigator.clipboard.writeText(value).then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'Copié !';
+      setTimeout(() => { btn.textContent = original; }, 1600);
+    });
+  }
+
+  // ---------- Champ d'étoiles animé ----------
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  let shootingStars = [];
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // Teintes réelles d'étoiles selon leur "type spectral" (bleu-blanc / blanc / jaune / orangé)
+  const starColors = [
+    { rgb: '202,216,255', weight: 0.16 }, // bleu-blanc (étoiles chaudes)
+    { rgb: '255,255,255', weight: 0.42 }, // blanc
+    { rgb: '255,244,214', weight: 0.28 }, // blanc-jaune
+    { rgb: '255,214,170', weight: 0.14 }  // orangé (étoiles froides)
+  ];
+  function pickColor(){
+    const r = Math.random();
+    let acc = 0;
+    for(const c of starColors){ acc += c.weight; if(r <= acc) return c.rgb; }
+    return starColors[1].rgb;
+  }
+
+  function initStars(){
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 4200);
+    for(let i = 0; i < count; i++){
+      // Concentration légère le long d'une bande diagonale, comme la voie lactée
+      const bandBias = Math.random() < 0.35;
+      let x = Math.random() * canvas.width;
+      let y = Math.random() * canvas.height;
+      if(bandBias){
+        const t = Math.random();
+        const bx = t * canvas.width;
+        const by = canvas.height * 0.15 + t * canvas.height * 0.7;
+        x = bx + (Math.random() - 0.5) * canvas.width * 0.28;
+        y = by + (Math.random() - 0.5) * canvas.height * 0.28;
+      }
+      const depth = Math.random(); // 0 = lointaine/petite, 1 = proche/brillante
+      stars.push({
+        x, y,
+        r: depth * 1.3 + 0.25,
+        depth,
+        color: pickColor(),
+        baseAlpha: 0.25 + depth * 0.6,
+        phase: Math.random() * Math.PI * 2,
+        speed: Math.random() * 0.012 + 0.003,
+        glow: depth > 0.82
+      });
+    }
+  }
+  initStars();
+  window.addEventListener('resize', initStars);
+
+  function maybeSpawnShootingStar(){
+    if(Math.random() < 0.004 && shootingStars.length < 2){
+      const startX = Math.random() * canvas.width * 0.6;
+      shootingStars.push({
+        x: startX,
+        y: -10,
+        len: 120 + Math.random() * 80,
+        speed: 8 + Math.random() * 4,
+        angle: Math.PI / 4,
+        life: 1
+      });
+    }
+  }
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function animate(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for(const s of stars){
+      if(!reducedMotion) s.phase += s.speed;
+      const alpha = Math.max(0, s.baseAlpha + Math.sin(s.phase) * 0.22);
+
+      if(s.glow){
+        const haloR = s.r * 6;
+        const halo = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, haloR);
+        halo.addColorStop(0, `rgba(${s.color}, ${alpha * 0.35})`);
+        halo.addColorStop(1, `rgba(${s.color}, 0)`);
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, haloR, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${s.color}, ${alpha})`;
+      ctx.fill();
+    }
+
+    if(!reducedMotion){
+      maybeSpawnShootingStar();
+      shootingStars.forEach(s => {
+        const dx = Math.cos(s.angle) * s.len;
+        const dy = Math.sin(s.angle) * s.len;
+        const grad = ctx.createLinearGradient(s.x, s.y, s.x - dx, s.y - dy);
+        grad.addColorStop(0, `rgba(255,255,255,${s.life})`);
+        grad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x - dx, s.y - dy);
+        ctx.stroke();
+
+        s.x += Math.cos(s.angle) * s.speed;
+        s.y += Math.sin(s.angle) * s.speed;
+        s.life -= 0.012;
+      });
+      shootingStars = shootingStars.filter(s => s.life > 0 && s.y < canvas.height + 50);
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+
+</body>
+</html>
